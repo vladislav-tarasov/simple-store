@@ -1,36 +1,32 @@
-import { LocalStorageState } from "../lib/store";
-import { useStateObserverBy } from "../lib/store/hooks/use-state-observer";
+import { PersistStore } from "../lib/store";
+import { useSelector } from "../lib/store/hooks/use-selector";
 
 export type Todo = { id: string; title: string; completed: boolean };
 
-const todosState = new LocalStorageState<{
+const todosStore = new PersistStore<{
   filterValue: string;
   todos: Todo[];
-}>("todosState", { filterValue: "", todos: [] });
+}>({
+  storageKey: "todosStore",
+  initialValues: () => ({ filterValue: "", todos: [] }),
+});
 
 // hooks
-export const useFilterValue = () =>
-  useStateObserverBy(todosState, "filterValue");
+export const useFilterValue = () => useSelector(todosStore, "filterValue");
 
-export const useTodos = () => useStateObserverBy(todosState, "todos");
+export const useTodos = () => useSelector(todosStore, "todos");
 
 // actions
 export const addTodo = (todo: Todo) =>
-  todosState.set({
+  todosStore.set(({ todos }) => ({
     filterValue: "",
-    todos: todosState.getBy("todos").concat(todo),
-  });
+    todos: [...todos, todo],
+  }));
 
 export const deleteTodo = (id: Todo["id"]) =>
-  todosState.setBy(
-    "todos",
-    todosState.getBy("todos").filter((todo) => todo.id !== id)
-  );
+  todosStore.setBy("todos", (todos) => todos.filter((todo) => todo.id !== id));
 
 export const completeTodo = (id: Todo["id"]) =>
-  todosState.setBy(
-    "todos",
-    todosState
-      .getBy("todos")
-      .map((todo) => (todo.id === id ? { ...todo, completed: true } : todo))
+  todosStore.setBy("todos", (todos) =>
+    todos.map((todo) => (todo.id === id ? { ...todo, completed: true } : todo))
   );

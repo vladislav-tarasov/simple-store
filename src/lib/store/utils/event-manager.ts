@@ -1,9 +1,12 @@
-import { DefaultState } from "../types";
+import { DefaultStoreValues } from "../types";
 
-export class EventManager<S extends DefaultState, K extends keyof S = keyof S> {
-  private listeners: Map<K, Set<(value: S[K]) => void>> = new Map();
+export class EventManager<
+  V extends DefaultStoreValues,
+  K extends keyof V = keyof V
+> {
+  private listeners: Map<K, Set<(value: V[K]) => void>> = new Map();
 
-  subscribe(key: K, cb: (value: S[K]) => void) {
+  subscribe(key: K, cb: (value: V[K]) => void) {
     const callbacks = this.listeners.get(key);
 
     if (callbacks && callbacks?.size !== 0) {
@@ -13,11 +16,11 @@ export class EventManager<S extends DefaultState, K extends keyof S = keyof S> {
     }
   }
 
-  unsubscribe(key: K, cb: (value: S[K]) => void) {
+  unsubscribe(key: K, cb: (value: V[K]) => void) {
     this.listeners.get(key)?.delete(cb);
   }
 
-  notify(key: K, v: S[K]) {
+  notify(key: K, v: V[K]) {
     this.listeners.get(key)?.forEach((cb) => cb(v));
   }
 }

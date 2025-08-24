@@ -16,7 +16,7 @@ const FilterInput = () => {
   return (
     <input
       type="text"
-      onChange={(e) => setValue(e.target.value)}
+      onChange={(e) => setValue(() => e.target.value)}
       value={value}
     />
   );

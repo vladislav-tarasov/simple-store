@@ -1,1 +1,3 @@
-export type DefaultState = Record<string, unknown>
+export type DefaultStoreValues = {
+  [key: string]: any;
+};
